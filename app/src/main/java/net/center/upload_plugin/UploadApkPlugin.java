@@ -2,6 +2,9 @@ package net.center.upload_plugin;
 
 import com.android.build.gradle.AppExtension;
 import com.android.build.gradle.api.ApplicationVariant;
+import com.android.build.gradle.internal.dsl.BuildType;
+import com.android.build.gradle.tasks.GenerateBuildConfig;
+import com.android.builder.model.ClassField;
 
 import net.center.upload_plugin.params.GitLogParams;
 import net.center.upload_plugin.params.SendDingParams;
@@ -14,6 +17,10 @@ import net.center.upload_plugin.task.OnlyUploadTask;
 import org.gradle.api.DomainObjectSet;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.gradle.api.tasks.TaskProvider;
+
+import java.util.Map;
+import java.util.function.BiConsumer;
 
 /**
  * Created by Android-ZX
@@ -38,6 +45,13 @@ public class UploadApkPlugin implements Plugin<Project> {
             for (ApplicationVariant applicationVariant : appVariants) {
                 if (applicationVariant.getBuildType() != null) {
                     dependsOnTask(applicationVariant, uploadParams, project1);
+                    BuildType byName = appExtension.getBuildTypes().findByName(applicationVariant.getBuildType().getName());
+                    if (byName != null) {
+                        Map<String, ClassField> buildConfigFields = byName.getBuildConfigFields();
+                        if (buildConfigFields != null) {
+                            buildConfigFields.forEach((s, classField) -> System.out.printf("\n>>>> %s:%s%n", s.toLowerCase(), classField.getValue()));
+                        }
+                    }
                 }
             }
         });

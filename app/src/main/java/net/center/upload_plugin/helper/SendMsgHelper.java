@@ -345,7 +345,7 @@ public class SendMsgHelper {
                     .append("更新时间：").append(dataDTO.getBuildUpdated()).append('\n')
                     .append("更新内容：").append(contentText).append('\n')
                     .append("扫码下载：").append(dataDTO.getBuildQRCodeURL()).append('\n')
-                    .append("点击查看应用：\n").append(String.format("https://www.pgyer.com/%s", dataDTO.getBuildShortcutUrl())).append('\n')
+                    .append("点击查看应用：").append(String.format("https://www.pgyer.com/%s", dataDTO.getBuildShortcutUrl())).append('\n')
                     .append("安装密码：").append(buildPassword).append('\n')
             ;
 //            markStr.append(dataDTO.getBuildName()).append(" V").append(dataDTO.getBuildVersion());
