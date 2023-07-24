@@ -1,7 +1,6 @@
 package net.center.upload_plugin.params;
 
 import org.gradle.api.Project;
-import org.gradle.internal.impldep.org.apache.http.util.TextUtils;
 
 /**
  * Created by Android-ZX
@@ -65,7 +64,7 @@ public class UploadPgyParams {
         if (extension == null) {
             extension = new UploadPgyParams();
         }
-        if (!TextUtils.isEmpty(extension.pgyUploadTag)){
+        if (extension.pgyUploadTag != null && extension.pgyUploadTag.length() > 0) {
             extension.buildUpdateDescription = String.format("tag=%s\n%s", extension.pgyUploadTag, extension.buildUpdateDescription);
         }
         return extension;

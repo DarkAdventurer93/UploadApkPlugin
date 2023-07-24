@@ -15,7 +15,6 @@ import net.center.upload_plugin.params.SendFeishuParams;
 import net.center.upload_plugin.params.SendWeixinGroupParams;
 
 import org.gradle.api.Project;
-import org.gradle.internal.impldep.org.apache.http.util.TextUtils;
 
 import java.io.File;
 import java.math.BigDecimal;
@@ -361,7 +360,7 @@ public class SendMsgHelper {
             } else {
                 String mentionedListStr = weixinGroupParams.mentionedList;
                 List<String> mentionedList = new ArrayList<>();
-                if (!TextUtils.isEmpty(mentionedListStr)) {
+                if (mentionedListStr != null && mentionedListStr.length() > 0) {
                     if (mentionedListStr.contains(",")) {
                         String[] split = mentionedListStr.split(",");
                         mentionedList.addAll(Arrays.asList(split));
