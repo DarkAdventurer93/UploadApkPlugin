@@ -1,11 +1,12 @@
 package net.center.upload_plugin.params;
 
 import org.gradle.api.Project;
+import org.gradle.internal.impldep.org.apache.http.util.TextUtils;
 
 /**
  * Created by Android-ZX
  * 2021/9/3.
- * 
+ * <p>
  * 蒲公英上传参数设置
  */
 public class UploadPgyParams {
@@ -26,7 +27,8 @@ public class UploadPgyParams {
     public String buildChannelShortcut;
 
     public String uploadApkFilePath;
-    
+    public String pgyUploadTag;
+
     public UploadPgyParams() {
 
     }
@@ -62,6 +64,9 @@ public class UploadPgyParams {
         UploadPgyParams extension = project.getExtensions().findByType(UploadPgyParams.class);
         if (extension == null) {
             extension = new UploadPgyParams();
+        }
+        if (!TextUtils.isEmpty(extension.pgyUploadTag)){
+            extension.buildUpdateDescription = String.format("tag=%s\n%s", extension.pgyUploadTag, extension.buildUpdateDescription);
         }
         return extension;
     }

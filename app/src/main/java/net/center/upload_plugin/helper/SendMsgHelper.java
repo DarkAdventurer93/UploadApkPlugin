@@ -1,6 +1,7 @@
 package net.center.upload_plugin.helper;
 
 import com.android.build.gradle.api.BaseVariant;
+import com.android.tools.r8.graph.F;
 
 import net.center.upload_plugin.PluginUtils;
 import net.center.upload_plugin.model.DingDingRequestBean;
@@ -14,8 +15,12 @@ import net.center.upload_plugin.params.SendFeishuParams;
 import net.center.upload_plugin.params.SendWeixinGroupParams;
 
 import org.gradle.api.Project;
+import org.gradle.internal.impldep.org.apache.http.util.TextUtils;
 
+import java.io.File;
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import groovy.json.JsonOutput;
@@ -27,7 +32,7 @@ import okhttp3.Response;
 public class SendMsgHelper {
 
     private static final String defaultTitle = "测试包";
-    private static final String defaultText = "最新开发测试包已上传 ";
+    private static final String defaultText = "最新包已上传";
     private static final String defaultClickText = "点我进行下载";
     private static final String defaultLogTitle = "更新内容：\n ";
 
@@ -37,7 +42,7 @@ public class SendMsgHelper {
      * @param project
      * @param dataDTO
      */
-    public static void sendMsgToDingDing(BaseVariant variant, Project project, PgyUploadResult.DataDTO dataDTO, String gitLog) {
+    public static void sendMsgToDingDing(BaseVariant variant, Project project, PgyUploadResult.DataDTO dataDTO, String gitLog, String buildPassword) {
         SendDingParams dingParams = SendDingParams.getDingParamsConfig(project);
         if (PluginUtils.isEmpty(dingParams.accessToken)) {
             System.out.println("send to Dingding failure：accessToken is empty");
@@ -138,7 +143,7 @@ public class SendMsgHelper {
      * @param project
      * @param dataDTO
      */
-    public static void sendMsgToFeishu(BaseVariant variant, Project project, PgyUploadResult.DataDTO dataDTO, String gitLog) {
+    public static void sendMsgToFeishu(BaseVariant variant, Project project, PgyUploadResult.DataDTO dataDTO, String gitLog, String buildPassword) {
         SendFeishuParams feishuParams = SendFeishuParams.getFeishuParamsConfig(project);
         String webHookHostUrl = feishuParams.webHookHostUrl;
         if (PluginUtils.isEmpty(webHookHostUrl)) {
@@ -306,7 +311,7 @@ public class SendMsgHelper {
      * @param project
      * @param dataDTO
      */
-    public static void sendMsgToWeiXinGroup(BaseVariant variant, Project project, PgyUploadResult.DataDTO dataDTO, String gitLog) {
+    public static void sendMsgToWeiXinGroup(BaseVariant variant, Project project, PgyUploadResult.DataDTO dataDTO, String gitLog, String buildPassword) {
         SendWeixinGroupParams weixinGroupParams = SendWeixinGroupParams.getWeixinGroupConfig(project);
         String webHookUrl = weixinGroupParams.webHookUrl;
         if (PluginUtils.isEmpty(webHookUrl)) {
@@ -318,23 +323,52 @@ public class SendMsgHelper {
         if (PluginUtils.isEmpty(contentTitle)) {
             contentTitle = defaultTitle;
         }
-        String contentText = weixinGroupParams.contentText;
+        String contentText;
+        try {
+            File file = new File(weixinGroupParams.contentText);
+            contentText = FileIOUtils.readFile2String(file);
+        } catch (Exception e) {
+            contentText = weixinGroupParams.contentText;
+        }
         if (PluginUtils.isEmpty(contentText)) {
             contentText = defaultText;
         }
         WXGroupRequestBean wxGroupRequestBean = new WXGroupRequestBean();
+        String apkSize = new BigDecimal((Integer.parseInt(dataDTO.getBuildFileSize())) / 1024 / 1024).setScale(1, BigDecimal.ROUND_HALF_UP).floatValue() + " MB";
         StringBuilder markStr = new StringBuilder();
         if ("text".equals(weixinGroupParams.msgtype)) {
             wxGroupRequestBean.setMsgtype("text");
             WXGroupRequestBean.TextDTO textDTO = new WXGroupRequestBean.TextDTO();
-            markStr.append(dataDTO.getBuildName()).append(" V").append(dataDTO.getBuildVersion());
-            markStr.append(flavorStr).append(contentTitle).append("\n").append("下载链接：https://www.pgyer.com/")
-                    .append(dataDTO.getBuildShortcutUrl()).append("\n").append(contentText);
+            markStr.append("软件更新提醒").append('\n').append("您的应用上传了新版本").append('\n')
+                    .append("应用名称：").append(dataDTO.getBuildName()).append('\n')
+                    .append("版本信息：").append(dataDTO.getBuildVersion()).append(" (Build ").append(dataDTO.getBuildBuildVersion()).append(")").append('\n')
+                    .append("应用大小：").append(apkSize).append('\n')
+                    .append("更新时间：").append(dataDTO.getBuildUpdated()).append('\n')
+                    .append("更新内容：").append(contentText).append('\n')
+                    .append("扫码下载：").append(dataDTO.getBuildQRCodeURL()).append('\n')
+                    .append("点击查看应用：\n").append(String.format("https://www.pgyer.com/%s", dataDTO.getBuildShortcutUrl())).append('\n')
+                    .append("安装密码：").append(buildPassword).append('\n')
+            ;
+//            markStr.append(dataDTO.getBuildName()).append(" V").append(dataDTO.getBuildVersion());
+//            markStr.append(flavorStr).append(contentTitle).append("\n").append("下载链接：https://www.pgyer.com/")
+//                    .append(dataDTO.getBuildShortcutUrl()).append("\n").append(contentText);
             textDTO.setContent(markStr.toString());
             if (weixinGroupParams.isAtAll) {
                 List<String> mentionedList = new ArrayList<>();
                 mentionedList.add("@all");
                 textDTO.setMentioned_list(mentionedList);
+                textDTO.setMentioned_mobile_list(mentionedList);
+            } else {
+                String mentionedListStr = weixinGroupParams.mentionedList;
+                List<String> mentionedList = new ArrayList<>();
+                if (!TextUtils.isEmpty(mentionedListStr)) {
+                    if (mentionedListStr.contains(",")) {
+                        String[] split = mentionedListStr.split(",");
+                        mentionedList.addAll(Arrays.asList(split));
+                    } else {
+                        mentionedList.add(mentionedListStr);
+                    }
+                }
                 textDTO.setMentioned_mobile_list(mentionedList);
             }
             wxGroupRequestBean.setText(textDTO);
