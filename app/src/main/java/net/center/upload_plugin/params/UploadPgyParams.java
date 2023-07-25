@@ -30,7 +30,7 @@ public class UploadPgyParams {
 
     public String uploadApkFilePath;
     public String pgyUploadTag;
-    public String version;
+    public String versionName;
 
     public UploadPgyParams() {
 
@@ -87,7 +87,7 @@ public class UploadPgyParams {
                 ", buildChannelShortcut='" + buildChannelShortcut + '\'' +
                 ", uploadApkFilePath='" + uploadApkFilePath + '\'' +
                 ", pgyUploadTag='" + pgyUploadTag + '\'' +
-                ", version='" + version + '\'' +
+                ", version='" + versionName + '\'' +
                 '}';
     }
 
@@ -95,8 +95,8 @@ public class UploadPgyParams {
         StringBuilder sb = new StringBuilder();
         sb.append("> 蒲公英上传信息:\n");
         sb.append("> appName:").append(appName);
-        if (!TextUtils.isEmpty(version)) {
-            sb.append('\n').append("> version: ").append(version);
+        if (!TextUtils.isEmpty(versionName)) {
+            sb.append('\n').append("> version: ").append(versionName);
         }
         sb.append('\n').append("> buildUpdateDescription:").append(buildUpdateDescription);
         if (!TextUtils.isEmpty(pgyUploadTag)) {
