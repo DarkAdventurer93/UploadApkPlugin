@@ -786,6 +786,6 @@ public final class FileIOUtils {
         }catch (Exception e){
             e.printStackTrace();
         }
-        return s;
+        return null;
     }
 }

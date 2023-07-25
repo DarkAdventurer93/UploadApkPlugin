@@ -8,6 +8,7 @@ import com.google.gson.Gson;
 import net.center.upload_plugin.PluginConstants;
 import net.center.upload_plugin.PluginUtils;
 import net.center.upload_plugin.helper.CmdHelper;
+import net.center.upload_plugin.helper.FileIOUtils;
 import net.center.upload_plugin.helper.HttpHelper;
 import net.center.upload_plugin.helper.SendMsgHelper;
 import net.center.upload_plugin.model.PgyCOSTokenResult;
@@ -126,7 +127,7 @@ public class BaseTask extends DefaultTask {
      * @param buildChannelShortcut
      * @param apkFile
      */
-    public void uploadPgyQuickWay(String apiKey, String appName, int installType, String buildPassword, String pgyUploadTag, String buildUpdateDescription, int buildInstallDate, String buildChannelShortcut, File apkFile) {
+    public void uploadPgyQuickWay(String apiKey, String appName, int installType, String buildPassword, String pgyUploadTag, String buildUpdateDescription, String buildUpdateDescriptionFile, int buildInstallDate, String buildChannelShortcut, File apkFile) {
         //builder
         MultipartBody.Builder bodyBuilder = new MultipartBody.Builder().setType(MultipartBody.FORM);
         bodyBuilder.addFormDataPart("_api_key", apiKey);
@@ -161,7 +162,7 @@ public class BaseTask extends DefaultTask {
                         System.out.println("upload pgy --- getCOSToken result error msg: " + pgyCOSTokenResult.getMessage());
                         return;
                     }
-                    uploadFileToPgy(pgyCOSTokenResult, apkFile, apiKey, buildPassword, buildUpdateDescription);
+                    uploadFileToPgy(pgyCOSTokenResult, apkFile, apiKey, buildPassword, buildUpdateDescription, buildUpdateDescriptionFile);
                 }
             } else {
                 System.out.println("upload pgy ---- request getCOSToken call failed");
@@ -179,7 +180,7 @@ public class BaseTask extends DefaultTask {
      * @param apkFile
      * @param apiKey
      */
-    private void uploadFileToPgy(PgyCOSTokenResult tokenResult, File apkFile, String apiKey, String buildPassword, String buildUpdateDescription) {
+    private void uploadFileToPgy(PgyCOSTokenResult tokenResult, File apkFile, String apiKey, String buildPassword, String buildUpdateDescription, String buildUpdateDescriptionFile) {
         if (PluginUtils.isEmpty(tokenResult.getData().getEndpoint())) {
             System.out.println("upload pgy --- endpoint url is empty");
             return;
@@ -215,7 +216,7 @@ public class BaseTask extends DefaultTask {
 //                    }
 //                    checkPgyUploadBuildInfo(apiKey, tokenResult.getData().getKey());
 //                }
-                checkPgyUploadBuildInfo(apiKey, tokenResult.getData().getKey(), buildPassword, buildUpdateDescription);
+                checkPgyUploadBuildInfo(apiKey, tokenResult.getData().getKey(), buildPassword, buildUpdateDescription, buildUpdateDescriptionFile);
             } else {
                 System.out.println("upload pgy --- endpoint: upload apkFile to pgy result failure");
             }
@@ -240,7 +241,7 @@ public class BaseTask extends DefaultTask {
      *                 <p>
      *                 buildInfo: upload pgy buildInfo result: {"code":1247,"message":"App is uploded, please wait"}
      */
-    private void checkPgyUploadBuildInfo(String apiKey, String buildKey, String buildPassword, String buildUpdateDescription) {
+    private void checkPgyUploadBuildInfo(String apiKey, String buildKey, String buildPassword, String buildUpdateDescription, String buildUpdateDescriptionFile) {
 //        Map<String, String> paramsMap = new HashMap<>(2);
 //        paramsMap.put("_api_key", apiKey);
 //        paramsMap.put("buildKey", buildKey);
@@ -269,6 +270,11 @@ public class BaseTask extends DefaultTask {
                             String gitLog = CmdHelper.checkGetGitParamsWithLog(mTargetProject);
                             SendMsgHelper.sendMsgToDingDing(mVariant, mTargetProject, uploadResult.getData(), gitLog, buildPassword);
                             SendMsgHelper.sendMsgToFeishu(mVariant, mTargetProject, uploadResult.getData(), gitLog, buildPassword);
+                            try {
+                                File file = new File(buildUpdateDescriptionFile);
+                                FileIOUtils.writeFileFromString(file, "");
+                            } catch (Exception e) {
+                            }
                             SendMsgHelper.sendMsgToWeiXinGroup(mVariant, mTargetProject, uploadResult.getData(), gitLog, buildPassword, buildUpdateDescription);
                         } else {
                             System.out.println("upload pgy --- buildInfo: upload pgy result error : data is empty");
@@ -277,7 +283,7 @@ public class BaseTask extends DefaultTask {
                         //正在发布返回数据
                         System.out.println("upload pgy --- buildInfo: upload pgy buildInfo code( " + uploadResult.getCode() + "):" + uploadResult.getMessage());
 //                        checkPgyUploadBuildInfo(apiKey, buildKey);
-                        pgyUploadBuildInfoTimer(apiKey, buildKey, buildPassword, buildUpdateDescription);
+                        pgyUploadBuildInfoTimer(apiKey, buildKey, buildPassword, buildUpdateDescription, buildUpdateDescriptionFile);
                     } else {
                         System.out.println("upload pgy --- buildInfo: upload pgy buildInfo result error msg: " + uploadResult.getMessage());
                     }
@@ -291,7 +297,7 @@ public class BaseTask extends DefaultTask {
         }
     }
 
-    private void pgyUploadBuildInfoTimer(String apiKey, String buildKey, String buildPassword, String buildUpdateDescription) {
+    private void pgyUploadBuildInfoTimer(String apiKey, String buildKey, String buildPassword, String buildUpdateDescription, String buildUpdateDescriptionFile) {
         System.out.println("upload pgy --- buildInfo: upload pgy buildInfo request again(pgyUploadBuildInfoTimer)");
 //        if (executorService == null) {
 //            executorService = new ScheduledThreadPoolExecutor(1);
@@ -321,7 +327,7 @@ public class BaseTask extends DefaultTask {
         try {
             TimeUnit.SECONDS.sleep(3);
 //            Thread.sleep(3000);
-            checkPgyUploadBuildInfo(apiKey, buildKey, buildPassword, buildUpdateDescription);
+            checkPgyUploadBuildInfo(apiKey, buildKey, buildPassword, buildUpdateDescription, buildUpdateDescriptionFile);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

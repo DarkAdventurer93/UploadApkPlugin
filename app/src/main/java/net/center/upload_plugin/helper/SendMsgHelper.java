@@ -413,11 +413,6 @@ public class SendMsgHelper {
         try {
             Response response = HttpHelper.getOkHttpClient().newCall(request).execute();
             if (response.isSuccessful() && response.body() != null) {
-                try {
-                    File file = new File(weixinGroupParams.contentText);
-                    FileIOUtils.writeFileFromString(file, "");
-                } catch (Exception e) {
-                }
                 String result = response.body().string();
                 System.out.println("send to WeiXin group result：" + result);
                 System.out.println("下载信息:\n" + "https://www.pgyer.com/" + dataDTO.getBuildShortcutUrl() + "\n" + buildPassword);

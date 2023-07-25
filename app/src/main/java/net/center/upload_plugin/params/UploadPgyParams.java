@@ -23,6 +23,8 @@ public class UploadPgyParams {
     public String buildPassword;
     //(选填) 版本更新描述，请传空字符串，或不传。
     public String buildUpdateDescription;
+    //选填，版本更新描述文件
+    public String buildUpdateDescriptionFile;
     //(选填)是否设置安装有效期，值为：1 设置有效时间， 2 长期有效，如果不填写不修改上一次的设置
     public int buildInstallDate = 2;
     //(选填)所需更新的指定渠道的下载短链接，只可指定一个渠道，字符串型，如：abcd
@@ -68,7 +70,10 @@ public class UploadPgyParams {
         if (extension == null) {
             extension = new UploadPgyParams();
         }
-        extension.buildUpdateDescription = FileIOUtils.parseFile(extension.buildUpdateDescription);
+        String s = FileIOUtils.parseFile(extension.buildUpdateDescriptionFile);
+        if (!PluginUtils.isEmpty(s)){
+            extension.buildUpdateDescription = s;
+        }
         extension.printInfo();
         return extension;
     }
@@ -83,6 +88,7 @@ public class UploadPgyParams {
                 ", buildInstallType=" + buildInstallType +
                 ", buildPassword='" + buildPassword + '\'' +
                 ", buildUpdateDescription='" + buildUpdateDescription + '\'' +
+                ", buildUpdateDescriptionFile='" + buildUpdateDescriptionFile + '\'' +
                 ", buildInstallDate=" + buildInstallDate +
                 ", buildChannelShortcut='" + buildChannelShortcut + '\'' +
                 ", uploadApkFilePath='" + uploadApkFilePath + '\'' +
