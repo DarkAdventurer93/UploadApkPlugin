@@ -13,9 +13,11 @@ import net.center.upload_plugin.params.UploadPgyParams;
 import net.center.upload_plugin.task.BuildAndUploadTask;
 import net.center.upload_plugin.task.OnlyUploadTask;
 
+import org.gradle.api.Action;
 import org.gradle.api.DomainObjectSet;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.gradle.api.Task;
 
 import java.util.Map;
 
@@ -38,6 +40,7 @@ public class UploadApkPlugin implements Plugin<Project> {
             if (appExtension == null) {
                 return;
             }
+            printBuildConfigFields(uploadParams.buildTypeName, appExtension);
             DomainObjectSet<ApplicationVariant> appVariants = appExtension.getApplicationVariants();
             for (ApplicationVariant applicationVariant : appVariants) {
                 if (applicationVariant.getBuildType() != null) {
@@ -56,25 +59,29 @@ public class UploadApkPlugin implements Plugin<Project> {
 
 
     private void dependsOnTask(ApplicationVariant applicationVariant, UploadPgyParams uploadParams, Project project1, AppExtension appExtension) {
+        String variantName = getVariantName(applicationVariant, uploadParams);
+        //创建我们，上传到蒲公英的task任务
+        BuildAndUploadTask uploadTask = project1.getTasks()
+                .create(PluginConstants.TASK_EXTENSION_NAME + variantName, BuildAndUploadTask.class);
+        uploadTask.doLast(task -> printBuildConfigFields(variantName, appExtension));
+        uploadTask.init(applicationVariant, project1);
+
+        //依赖关系 。上传依赖打包，打包依赖clean。
+        applicationVariant.getAssembleProvider().get().dependsOn(project1.getTasks().findByName("clean"));
+        uploadTask.dependsOn(applicationVariant.getAssembleProvider().get());
+    }
+
+    private static String getVariantName(ApplicationVariant applicationVariant, UploadPgyParams uploadParams) {
         String variantName =
                 applicationVariant.getName().substring(0, 1).toUpperCase() + applicationVariant.getName().substring(1);
         if (PluginUtils.isEmpty(variantName)) {
             variantName = PluginUtils.isEmpty(uploadParams.buildTypeName) ? "Release" : uploadParams.buildTypeName;
         }
-        //创建我们，上传到蒲公英的task任务
-        BuildAndUploadTask uploadTask = project1.getTasks()
-                .create(PluginConstants.TASK_EXTENSION_NAME + variantName, BuildAndUploadTask.class);
-        uploadTask.init(applicationVariant, project1);
-
-        //依赖关系 。上传依赖打包，打包依赖clean。
-        applicationVariant.getAssembleProvider().get().dependsOn(project1.getTasks().findByName("clean"));
-        uploadTask.dependsOn(applicationVariant.getAssembleProvider().get())
-                .doFirst(task -> printBuildConfigFields(applicationVariant, appExtension))
-                .doLast(task -> printBuildConfigFields(applicationVariant, appExtension));
+        return variantName;
     }
 
-    private static void printBuildConfigFields(ApplicationVariant applicationVariant, AppExtension appExtension) {
-        BuildType byName = appExtension.getBuildTypes().findByName(applicationVariant.getBuildType().getName());
+    private static void printBuildConfigFields(String variantName, AppExtension appExtension) {
+        BuildType byName = appExtension.getBuildTypes().findByName(variantName.toLowerCase());
         if (byName != null) {
             Map<String, ClassField> buildConfigFields = byName.getBuildConfigFields();
             if (buildConfigFields != null) {

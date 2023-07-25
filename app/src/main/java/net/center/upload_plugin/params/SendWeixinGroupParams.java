@@ -3,6 +3,8 @@ package net.center.upload_plugin.params;
 import com.android.tools.r8.u.b.S;
 
 import org.gradle.api.Project;
+import org.gradle.internal.impldep.org.apache.http.util.TextUtils;
+import org.w3c.dom.Text;
 
 import java.util.List;
 
@@ -32,7 +34,7 @@ public class SendWeixinGroupParams {
 
     }
 
-    public SendWeixinGroupParams(String webHookUrl, String msgtype, boolean isAtAll, String contentTitle, String contentText,String mentionedList) {
+    public SendWeixinGroupParams(String webHookUrl, String msgtype, boolean isAtAll, String contentTitle, String contentText, String mentionedList) {
         this.webHookUrl = webHookUrl;
         this.msgtype = msgtype;
         this.isAtAll = isAtAll;
@@ -46,7 +48,21 @@ public class SendWeixinGroupParams {
         if (extension == null) {
             extension = new SendWeixinGroupParams();
         }
+        extension.printInfo();
         return extension;
     }
 
+    public void printInfo() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("> 企业微信Webhook信息:\n");
+        if (!TextUtils.isEmpty(webHookUrl)) {
+            sb.append("> webHookUrl:").append(webHookUrl);
+            if (!TextUtils.isEmpty(mentionedList)) {
+                sb.append('\n').append("> mentionedList: ").append(mentionedList);
+            }
+        } else {
+            sb.append("> 无需webHook");
+        }
+        System.out.println(sb);
+    }
 }

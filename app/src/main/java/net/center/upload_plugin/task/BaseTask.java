@@ -64,7 +64,7 @@ public class BaseTask extends DefaultTask {
 //        if (!PluginUtils.isEmpty(buildUpdateDescription)) {
 //            bodyBuilder.addFormDataPart("buildUpdateDescription", buildUpdateDescription);
 //        }
-        bodyBuilder.addFormDataPart("buildUpdateDescription", String.format("%s%s", pgyUploadTag, PluginUtils.isEmpty(buildUpdateDescription) ? "" : "\n" + buildUpdateDescription));
+        bodyBuilder.addFormDataPart("buildUpdateDescription", String.format("tag=%s%s", pgyUploadTag, PluginUtils.isEmpty(buildUpdateDescription) ? "" : "\n" + buildUpdateDescription));
         if (installType != 1) {
             bodyBuilder.addFormDataPart("buildInstallType", installType + "");
         }
@@ -134,7 +134,7 @@ public class BaseTask extends DefaultTask {
 //        if (!PluginUtils.isEmpty(buildUpdateDescription)) {
 //            bodyBuilder.addFormDataPart("buildUpdateDescription", buildUpdateDescription);
 //        }
-        bodyBuilder.addFormDataPart("buildUpdateDescription", String.format("%s%s", pgyUploadTag, PluginUtils.isEmpty(buildUpdateDescription) ? "" : "\n" + buildUpdateDescription));
+        bodyBuilder.addFormDataPart("buildUpdateDescription", String.format("tag=%s%s", pgyUploadTag, PluginUtils.isEmpty(buildUpdateDescription) ? "" : "\n" + buildUpdateDescription));
         if (installType != 1) {
             bodyBuilder.addFormDataPart("buildInstallType", installType + "");
         }

@@ -3,6 +3,7 @@ package net.center.upload_plugin.params;
 import net.center.upload_plugin.helper.FileIOUtils;
 
 import org.gradle.api.Project;
+import org.gradle.internal.impldep.org.apache.http.util.TextUtils;
 
 /**
  * Created by Android-ZX
@@ -29,6 +30,7 @@ public class UploadPgyParams {
 
     public String uploadApkFilePath;
     public String pgyUploadTag;
+    public String version;
 
     public UploadPgyParams() {
 
@@ -67,7 +69,39 @@ public class UploadPgyParams {
             extension = new UploadPgyParams();
         }
         extension.buildUpdateDescription = FileIOUtils.parseFile(extension.buildUpdateDescription);
+        extension.printInfo();
         return extension;
     }
 
+
+    @Override
+    public String toString() {
+        return "UploadPgyParams{" +
+                "apiKey='" + apiKey + '\'' +
+                ", appName='" + appName + '\'' +
+                ", buildTypeName='" + buildTypeName + '\'' +
+                ", buildInstallType=" + buildInstallType +
+                ", buildPassword='" + buildPassword + '\'' +
+                ", buildUpdateDescription='" + buildUpdateDescription + '\'' +
+                ", buildInstallDate=" + buildInstallDate +
+                ", buildChannelShortcut='" + buildChannelShortcut + '\'' +
+                ", uploadApkFilePath='" + uploadApkFilePath + '\'' +
+                ", pgyUploadTag='" + pgyUploadTag + '\'' +
+                ", version='" + version + '\'' +
+                '}';
+    }
+
+    public void printInfo() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("> 蒲公英上传信息:\n");
+        sb.append("> appName:").append(appName);
+        if (!TextUtils.isEmpty(version)) {
+            sb.append('\n').append("> version: ").append(version);
+        }
+        sb.append('\n').append("> buildUpdateDescription:").append(buildUpdateDescription);
+        if (!TextUtils.isEmpty(pgyUploadTag)) {
+            sb.append('\n').append("> pgyUploadTag:").append(pgyUploadTag);
+        }
+        System.out.println(sb);
+    }
 }
