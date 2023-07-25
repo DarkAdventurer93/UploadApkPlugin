@@ -310,7 +310,7 @@ public class SendMsgHelper {
      * @param project
      * @param dataDTO
      */
-    public static void sendMsgToWeiXinGroup(BaseVariant variant, Project project, PgyUploadResult.DataDTO dataDTO, String gitLog, String buildPassword) {
+    public static void sendMsgToWeiXinGroup(BaseVariant variant, Project project, PgyUploadResult.DataDTO dataDTO, String gitLog, String buildPassword, String buildUpdateDescription) {
         SendWeixinGroupParams weixinGroupParams = SendWeixinGroupParams.getWeixinGroupConfig(project);
         String webHookUrl = weixinGroupParams.webHookUrl;
         if (PluginUtils.isEmpty(webHookUrl)) {
@@ -322,13 +322,7 @@ public class SendMsgHelper {
         if (PluginUtils.isEmpty(contentTitle)) {
             contentTitle = defaultTitle;
         }
-        String contentText;
-        try {
-            File file = new File(weixinGroupParams.contentText);
-            contentText = FileIOUtils.readFile2String(file);
-        } catch (Exception e) {
-            contentText = weixinGroupParams.contentText;
-        }
+        String contentText = buildUpdateDescription;
         if (PluginUtils.isEmpty(contentText)) {
             contentText = defaultText;
         }
@@ -426,6 +420,7 @@ public class SendMsgHelper {
                 }
                 String result = response.body().string();
                 System.out.println("send to WeiXin group result：" + result);
+                System.out.println("下载信息:\n" + "https://www.pgyer.com/" + dataDTO.getBuildShortcutUrl() + "\n" + buildPassword);
             } else {
                 System.out.println("send to WeiXin group failure");
             }

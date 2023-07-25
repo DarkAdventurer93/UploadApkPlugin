@@ -48,7 +48,7 @@ public class BuildAndUploadTask extends BaseTask {
 //                    , params.buildPassword, params.buildUpdateDescription
 //                    , params.buildInstallDate, params.buildChannelShortcut, apk);
             uploadPgyQuickWay(params.apiKey, params.appName, params.buildInstallType
-                    , params.buildPassword, params.buildUpdateDescription
+                    , params.buildPassword, params.pgyUploadTag, params.buildUpdateDescription
                     , params.buildInstallDate, params.buildChannelShortcut, apk);
         }
     }

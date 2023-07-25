@@ -1,6 +1,8 @@
 package net.center.upload_plugin.helper;
 
 
+import com.android.tools.r8.graph.F;
+
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -778,4 +780,12 @@ public final class FileIOUtils {
         }
     }
 
+    public static String parseFile(String s){
+        try {
+            FileIOUtils.readFile2String(new File(s));
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return s;
+    }
 }

@@ -1,5 +1,7 @@
 package net.center.upload_plugin.params;
 
+import net.center.upload_plugin.helper.FileIOUtils;
+
 import org.gradle.api.Project;
 
 /**
@@ -64,9 +66,7 @@ public class UploadPgyParams {
         if (extension == null) {
             extension = new UploadPgyParams();
         }
-        if (extension.pgyUploadTag != null && extension.pgyUploadTag.length() > 0) {
-            extension.buildUpdateDescription = String.format("tag=%s\n%s", extension.pgyUploadTag, extension.buildUpdateDescription);
-        }
+        extension.buildUpdateDescription = FileIOUtils.parseFile(extension.buildUpdateDescription);
         return extension;
     }
 
