@@ -85,7 +85,7 @@ public class UploadApkPlugin implements Plugin<Project> {
         if (byName != null) {
             Map<String, ClassField> buildConfigFields = byName.getBuildConfigFields();
             if (buildConfigFields != null) {
-                buildConfigFields.forEach((s, classField) -> System.out.printf("\n>>>> %s:%s%n", s.toLowerCase(), classField.getValue()));
+                buildConfigFields.forEach((s, classField) -> System.out.println(String.format("> [%s]:%s", s.toLowerCase(), classField.getValue())));
             }
         }
     }
