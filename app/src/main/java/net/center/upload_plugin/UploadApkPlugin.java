@@ -41,6 +41,10 @@ public class UploadApkPlugin implements Plugin<Project> {
                 return;
             }
             printBuildConfigFields(uploadParams.buildTypeName, appExtension);
+            UploadPgyParams params = UploadPgyParams.getConfig(project);
+            params.printInfo();
+            SendWeixinGroupParams weixinGroupConfig = SendWeixinGroupParams.getWeixinGroupConfig(project);
+            weixinGroupConfig.printInfo();
             DomainObjectSet<ApplicationVariant> appVariants = appExtension.getApplicationVariants();
             for (ApplicationVariant applicationVariant : appVariants) {
                 if (applicationVariant.getBuildType() != null) {

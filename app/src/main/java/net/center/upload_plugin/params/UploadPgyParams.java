@@ -93,8 +93,10 @@ public class UploadPgyParams {
 
     public void printInfo() {
         StringBuilder sb = new StringBuilder();
-        sb.append("> 蒲公英上传信息:\n");
-        sb.append("> appName:").append(appName);
+        sb.append("> 蒲公英上传信息:");
+        if (!PluginUtils.isEmpty(appName)) {
+            sb.append('\n').append("> appName:").append(appName);
+        }
         if (!PluginUtils.isEmpty(versionName)) {
             sb.append('\n').append("> version: ").append(versionName);
         }
