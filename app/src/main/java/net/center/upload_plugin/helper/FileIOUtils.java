@@ -782,7 +782,7 @@ public final class FileIOUtils {
 
     public static String parseFile(String s){
         try {
-            FileIOUtils.readFile2String(new File(s));
+           return FileIOUtils.readFile2String(new File(s));
         }catch (Exception e){
             e.printStackTrace();
         }

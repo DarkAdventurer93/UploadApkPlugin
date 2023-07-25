@@ -3,7 +3,6 @@ package net.center.upload_plugin;
 import com.android.build.gradle.AppExtension;
 import com.android.build.gradle.api.ApplicationVariant;
 import com.android.build.gradle.internal.dsl.BuildType;
-import com.android.build.gradle.tasks.GenerateBuildConfig;
 import com.android.builder.model.ClassField;
 
 import net.center.upload_plugin.params.GitLogParams;
@@ -17,10 +16,8 @@ import net.center.upload_plugin.task.OnlyUploadTask;
 import org.gradle.api.DomainObjectSet;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
-import org.gradle.api.tasks.TaskProvider;
 
 import java.util.Map;
-import java.util.function.BiConsumer;
 
 /**
  * Created by Android-ZX
@@ -44,14 +41,7 @@ public class UploadApkPlugin implements Plugin<Project> {
             DomainObjectSet<ApplicationVariant> appVariants = appExtension.getApplicationVariants();
             for (ApplicationVariant applicationVariant : appVariants) {
                 if (applicationVariant.getBuildType() != null) {
-                    dependsOnTask(applicationVariant, uploadParams, project1);
-                    BuildType byName = appExtension.getBuildTypes().findByName(applicationVariant.getBuildType().getName());
-                    if (byName != null) {
-                        Map<String, ClassField> buildConfigFields = byName.getBuildConfigFields();
-                        if (buildConfigFields != null) {
-                            buildConfigFields.forEach((s, classField) -> System.out.printf("\n>>>> %s:%s%n", s.toLowerCase(), classField.getValue()));
-                        }
-                    }
+                    dependsOnTask(applicationVariant, uploadParams, project1, appExtension);
                 }
             }
         });
@@ -65,7 +55,7 @@ public class UploadApkPlugin implements Plugin<Project> {
     }
 
 
-    private void dependsOnTask(ApplicationVariant applicationVariant, UploadPgyParams uploadParams, Project project1) {
+    private void dependsOnTask(ApplicationVariant applicationVariant, UploadPgyParams uploadParams, Project project1, AppExtension appExtension) {
         String variantName =
                 applicationVariant.getName().substring(0, 1).toUpperCase() + applicationVariant.getName().substring(1);
         if (PluginUtils.isEmpty(variantName)) {
@@ -78,7 +68,19 @@ public class UploadApkPlugin implements Plugin<Project> {
 
         //依赖关系 。上传依赖打包，打包依赖clean。
         applicationVariant.getAssembleProvider().get().dependsOn(project1.getTasks().findByName("clean"));
-        uploadTask.dependsOn(applicationVariant.getAssembleProvider().get());
+        uploadTask.dependsOn(applicationVariant.getAssembleProvider().get())
+                .doFirst(task -> printBuildConfigFields(applicationVariant, appExtension))
+                .doLast(task -> printBuildConfigFields(applicationVariant, appExtension));
+    }
+
+    private static void printBuildConfigFields(ApplicationVariant applicationVariant, AppExtension appExtension) {
+        BuildType byName = appExtension.getBuildTypes().findByName(applicationVariant.getBuildType().getName());
+        if (byName != null) {
+            Map<String, ClassField> buildConfigFields = byName.getBuildConfigFields();
+            if (buildConfigFields != null) {
+                buildConfigFields.forEach((s, classField) -> System.out.printf("\n>>>> %s:%s%n", s.toLowerCase(), classField.getValue()));
+            }
+        }
     }
 
     private void dependsOnOnlyUploadTask(UploadPgyParams uploadParams, Project project1) {
