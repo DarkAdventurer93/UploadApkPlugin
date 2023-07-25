@@ -51,6 +51,7 @@ public class UploadApkPlugin implements Plugin<Project> {
                     dependsOnTask(applicationVariant, uploadParams, project1, appExtension);
                 }
             }
+            printBuildConfigFields(uploadParams.buildTypeName, appExtension);
         });
     }
 
@@ -67,7 +68,6 @@ public class UploadApkPlugin implements Plugin<Project> {
         //创建我们，上传到蒲公英的task任务
         BuildAndUploadTask uploadTask = project1.getTasks()
                 .create(PluginConstants.TASK_EXTENSION_NAME + variantName, BuildAndUploadTask.class);
-        uploadTask.doLast(task -> printBuildConfigFields(variantName, appExtension));
         uploadTask.init(applicationVariant, project1);
 
         //依赖关系 。上传依赖打包，打包依赖clean。
