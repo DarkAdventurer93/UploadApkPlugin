@@ -2,9 +2,9 @@ package net.center.upload_plugin.params;
 
 import com.android.tools.r8.u.b.S;
 
+import net.center.upload_plugin.PluginUtils;
+
 import org.gradle.api.Project;
-import org.gradle.internal.impldep.org.apache.http.util.TextUtils;
-import org.w3c.dom.Text;
 
 import java.util.List;
 
@@ -55,9 +55,9 @@ public class SendWeixinGroupParams {
     public void printInfo() {
         StringBuilder sb = new StringBuilder();
         sb.append("> 企业微信Webhook信息:\n");
-        if (!TextUtils.isEmpty(webHookUrl)) {
+        if (!PluginUtils.isEmpty(webHookUrl)) {
             sb.append("> webHookUrl:").append(webHookUrl);
-            if (!TextUtils.isEmpty(mentionedList)) {
+            if (!PluginUtils.isEmpty(mentionedList)) {
                 sb.append('\n').append("> mentionedList: ").append(mentionedList);
             }
         } else {

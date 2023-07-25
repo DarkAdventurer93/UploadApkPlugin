@@ -1,9 +1,9 @@
 package net.center.upload_plugin.params;
 
+import net.center.upload_plugin.PluginUtils;
 import net.center.upload_plugin.helper.FileIOUtils;
 
 import org.gradle.api.Project;
-import org.gradle.internal.impldep.org.apache.http.util.TextUtils;
 
 /**
  * Created by Android-ZX
@@ -95,11 +95,11 @@ public class UploadPgyParams {
         StringBuilder sb = new StringBuilder();
         sb.append("> 蒲公英上传信息:\n");
         sb.append("> appName:").append(appName);
-        if (!TextUtils.isEmpty(versionName)) {
+        if (!PluginUtils.isEmpty(versionName)) {
             sb.append('\n').append("> version: ").append(versionName);
         }
         sb.append('\n').append("> buildUpdateDescription:").append(buildUpdateDescription);
-        if (!TextUtils.isEmpty(pgyUploadTag)) {
+        if (!PluginUtils.isEmpty(pgyUploadTag)) {
             sb.append('\n').append("> pgyUploadTag:").append(pgyUploadTag);
         }
         System.out.println(sb);
