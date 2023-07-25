@@ -784,7 +784,6 @@ public final class FileIOUtils {
         try {
            return FileIOUtils.readFile2String(new File(s));
         }catch (Exception e){
-            e.printStackTrace();
         }
         return null;
     }
