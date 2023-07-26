@@ -67,9 +67,13 @@ public class UploadApkPlugin implements Plugin<Project> {
                 .create(PluginConstants.TASK_EXTENSION_NAME + variantName, BuildAndUploadTask.class);
         uploadTask.init(applicationVariant, project1);
 
+        String dependTaskName = String.format("assemble%s", variantName);
+        System.out.println("dependTaskName:" + dependTaskName);
+        //依赖关系 。上传依赖打包，打包依赖assemble{flavors}{buildType}。
+        applicationVariant.getAssembleProvider().get().dependsOn(project1.getTasks().findByName(dependTaskName));
         //依赖关系 。上传依赖打包，打包依赖clean。
-        applicationVariant.getAssembleProvider().get().dependsOn(project1.getTasks().findByName("clean"));
-        uploadTask.dependsOn(applicationVariant.getAssembleProvider().get()).doLast(task -> printBuildConfigFields(variantName,appExtension));
+//        applicationVariant.getAssembleProvider().get().dependsOn(project1.getTasks().findByName("clean"));
+        uploadTask.dependsOn(applicationVariant.getAssembleProvider().get()).doLast(task -> printBuildConfigFields(variantName, appExtension));
     }
 
     private static String getVariantName(ApplicationVariant applicationVariant, UploadPgyParams uploadParams) {
