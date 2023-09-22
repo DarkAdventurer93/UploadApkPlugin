@@ -81,7 +81,7 @@ public class BaseTask extends DefaultTask {
                 .create(MediaType.parse("*/*"), apkFile));
         //request
         Request request = getRequestBuilder()
-                .url("https://www.pgyer.com/apiv2/app/upload")
+                .url(String.format("https://www.%s.com/apiv2/app/upload", PluginUtils.getPgyIdentifier()))
                 .post(bodyBuilder.build())
                 .build();
         try {
@@ -148,7 +148,7 @@ public class BaseTask extends DefaultTask {
         }
         System.out.println("upload pgy --- 快速上传方式接口：Start getCOSToken");
         Request request = getRequestBuilder()
-                .url("https://www.pgyer.com/apiv2/app/getCOSToken")
+                .url(String.format("https://www.%s.com/apiv2/app/getCOSToken",PluginUtils.getPgyIdentifier()))
                 .post(bodyBuilder.build())
                 .build();
         try {
@@ -250,7 +250,7 @@ public class BaseTask extends DefaultTask {
 //        //request
 //        Request request = getRequestBuilder("get", url, paramsMap)
 //                .build();
-        String url = "https://www.pgyer.com/apiv2/app/buildInfo?_api_key=" + apiKey + "&buildKey=" + buildKey;
+        String url = "https://www."+PluginUtils.getPgyIdentifier()+".com/apiv2/app/buildInfo?_api_key=" + apiKey + "&buildKey=" + buildKey;
         System.out.println("upload pgy --- Start buildInfo : " + url);
         Request request = getRequestBuilder()
                 .url(url)
