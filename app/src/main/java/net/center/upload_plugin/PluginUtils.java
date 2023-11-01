@@ -18,7 +18,7 @@ public class PluginUtils {
 
 
     public static String getPgyIdentifier() {
-        return "xcxwo";
-//        return "pgyer";
+//        return "xcxwo";
+        return "pgyer";
     }
 }
